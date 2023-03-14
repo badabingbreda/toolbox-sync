@@ -5,6 +5,9 @@ namespace ToolboxSync;
 //use ToolboxHelper\Helpers\AcfHelper;
 //use ToolboxHelper\Helpers\MBHelper;
 
+use ToolboxSync\Helpers\Sync\Local;
+
+
 /**
  * REST API methods to retreive data for WordPress rules.
  *
@@ -45,36 +48,30 @@ final class Rest {
 					'methods'  => \WP_REST_Server::READABLE,
 					'permission_callback' => 'is_user_logged_in', //'__return_true',
 					'callback' => __CLASS__ . '::posts',
+					'args' => array(),
 				),
 			)
 		);
 
+		\register_rest_route(
+			self::$namespace, '/post(?:\/(?P<id>))?', array(
+				array(
+					'methods'  => \WP_REST_Server::READABLE,
+					'permission_callback' => '__return_true',//'is_user_logged_in', //'__return_true',
+					'callback' => __CLASS__ . '::post',
+					'args' => [ 
+						'id' => [ 
+							'type' => 'numeric',
+							'required' => true,
+						],
+					]
+				),
+			)
+		);		
+
+
 	}
 	
-	/**
-	 * check_application_password
-	 *
-	 * @return void
-	 */
-	public static function check_application_password() {
-
-		$user_credentials = base64_decode($_SERVER['HTTP_AUTHORIZATION']);
-		$username_password = explode(':', $user_credentials);
-		
-		// Extract the username and password from the credentials
-		$username = $username_password[0];
-		$password = $username_password[1];
-		
-		$user = \wp_authenticate_application_password( null, $username, $password);
-
-		if (is_wp_error($user)) {
-			// invalid combination
-			return false;
-		} 
-
-		return true;
-	}
-
 	/**
 	 * Returns an array of posts with each item
 	 * containing a label and value.
@@ -85,70 +82,26 @@ final class Rest {
 	 */
 	static public function posts( $request ) {
 
+		$data = Local::get( 'fl-builder-template' );
 
-		// get lists of posts
-		$args = [
-			'post_type' => 'fl-theme-layout',
-			'fields' => 'ids',
-			'post_status' => 'any',
+		return rest_ensure_response( [ 'posts' => $data ] );
 
-		];
-
-		$posts = \get_posts( $args );
-
-		$data = [];
-
-		if ( sizeof($posts)>0 ) {
-			foreach ($posts as $post_id) {
-
-				$slug = get_post_field( 'post_name' , $post_id );
-				$remote_counterpart = get_post_meta( $post_id, 'toolboxsync_remote_post_id', true );
-
-				$data[] = [ 
-							'slug' => $slug,
-							'local_ID' => $post_id,
-							'remote_ID' => $remote_counterpart ? $remote_counterpart : false,
-						];
-
-			}
-		}
-
-		return rest_ensure_response( $data );
-
-		return rest_ensure_response( [ 'success' ] );
-		//$twig_files = ( ScanDir::scan( ScanDir::get_view_directories() , 'twig' , true ) );
-
-		$files = [];
-
-		foreach($twig_files as $file) {
-
-			if ( $file['basename'] == 'fallback.twig' ) continue;
-
-			$template_type = filter_input( INPUT_GET , 'templatetype' , FILTER_SANITIZE_STRING );
-
-			// if a certain template type has been provided
-			// skip files that have no TemplateType set
-			// skip files that have no matching templatetype
-			if ( $template_type ) {
-
-				if ( !$file[ 'data' ] ) continue;
-				if ( !in_array( $template_type , $file[ 'data' ][ 'template_type' ] ) ) continue;
-
-			} 
-
-			if ( $file[ 'data' ] ) {
-				if ( $file[ 'data' ][ 'hidden' ] ) continue;
-			}
-			
-			$files[] = [ 
-					'value' => $file['rel_path'] . $file['basename'],
-					'label' => $file['rel_path'] . $file['basename'],
-					'data' => $file[ 'data' ], 
-				];
-		}
-
-
-		return rest_ensure_response( $files );
 	}
+
+	static public function post( $request ) {
+
+
+
+		return rest_ensure_response( [ 
+			'id' => $request['id'],
+			
+			'data' => Local::get_single( $request[ 'id' ] ),
+			 ] );
+		
+
+		//$data = Local::post( );
+
+	}
+
 
 }

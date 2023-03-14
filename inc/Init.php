@@ -4,6 +4,7 @@ namespace ToolboxSync;
 use ToolboxSync\Rest;
 use ToolboxSync\Helpers\Ajax;
 use ToolboxSync\Dashboard\Dashboard;
+use ToolboxSync\Helpers\Sync;
 
 class Init {
 
@@ -12,6 +13,7 @@ class Init {
         new Rest();
         new Ajax();
         new Dashboard();
+        new Sync();
 
     }
 }

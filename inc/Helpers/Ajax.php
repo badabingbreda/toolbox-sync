@@ -25,7 +25,11 @@ class Ajax {
             $data =  $curl->response;
         } else {
             $data = $curl->response;
+
+            $data = json_decode( $data , true );
         }
+
+        
 
         // add test if is member at some time
 
