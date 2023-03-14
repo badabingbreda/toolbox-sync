@@ -1,0 +1,33 @@
+/* extra padding on messages */
+.toolbox-messages {
+  padding: 10px;
+}
+.toolbox-settings-form {
+  max-width: 450px;
+}
+/*  license is active */
+.lic-active {
+  color: green;
+}
+/* license is inactive */
+.lic-inactive {
+  color: orange;
+}
+/* tab-content heading */
+.jq-tab-content h3 {
+  padding-top: 0;
+  margin-top: 0;
+}
+/* border on active tab option */
+.jq-tab-title.active {
+  border-left: solid 8px #0085ba !important;
+}
+/**
+ * Codemirror settings
+ */
+.CodeMirror {
+  height: auto;
+}
+.CodeMirror-scroll {
+  max-height: 90vh;
+}
