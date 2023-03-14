@@ -42,9 +42,9 @@ class Dashboard {
 
 		if ( !$user_login || !$password || !$site_url ) return;
 
-		update_option( 'toolboxsync_remotesite' , $site_url );
-		update_option( 'toolboxsync_user_login' , $user_login );
-		update_option( 'toolboxsync_password' , $password );
+		update_option( 'tsync_remotesite' , $site_url );
+		update_option( 'tsync_user_login' , $user_login );
+		update_option( 'tsync_password' , $password );
 	}
 
 	public static function prefix() {

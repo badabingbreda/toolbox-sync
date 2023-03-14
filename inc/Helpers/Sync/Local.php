@@ -19,7 +19,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
      * @param  mixed $post_type
      * @return void
      */
-    public static function get( $post_type = 'fl-theme-layout' ) {
+    public static function get_all( $post_type = 'fl-theme-layout' ) {
 
 		// get lists of posts
 		$args = [

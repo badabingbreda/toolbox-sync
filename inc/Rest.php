@@ -53,6 +53,18 @@ final class Rest {
 			)
 		);
 
+		register_rest_route(
+			self::$namespace, '/connect', array(
+				array(
+					'methods'  => \WP_REST_Server::READABLE,
+					'permission_callback' => 'is_user_logged_in', //'__return_true',
+					'callback' => '__return_true',
+					'args' => array(),
+				),
+			)
+		);
+
+
 		\register_rest_route(
 			self::$namespace, '/post(?:\/(?P<id>))?', array(
 				array(
@@ -82,9 +94,9 @@ final class Rest {
 	 */
 	static public function posts( $request ) {
 
-		$data = Local::get( 'fl-builder-template' );
+		$posts = Local::get_all( );
 
-		return rest_ensure_response( [ 'posts' => $data ] );
+		return rest_ensure_response( [ 'posts' => $posts ] );
 
 	}
 

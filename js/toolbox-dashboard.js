@@ -51,7 +51,7 @@
             e.preventDefault();
             jQuery.ajax( {
                 type: 'GET',
-                url: `/wp-admin/admin-ajax.php?action=toolboxsync_get_posts`,
+                url: `/wp-admin/admin-ajax.php?action=tsync_push_prepare`,
                 data: { 
                 },
                 success: (data) => {

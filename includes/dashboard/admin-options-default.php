@@ -14,7 +14,7 @@ namespace ToolboxSync\Dashboard;
 $admin_dashboard_name = 'default';
 $nonce_prefix = 'toolboxsync';
 
-$remote_site = get_option( 'toolboxsync_remotesite' );
+$remote_site = get_option( 'tsync_remotesite' );
 if (!$remote_site) $remote_site = 'https://';
 ?>
 <div class="jq-tab-content" data-tab="<?php echo $admin_dashboard_name; ?>">
