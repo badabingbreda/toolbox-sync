@@ -45,7 +45,7 @@ class Remote extends \ToolboxSync\Helpers\Sync {
      *
      * @return void
      */
-    public static function get() {
+    public static function get_all() {
 
         $curl = new Curl();
         $curl->setBasicAuthentication( self::$user_login, self::$password );
@@ -62,6 +62,24 @@ class Remote extends \ToolboxSync\Helpers\Sync {
         }
 
         return $data;
+
+    }
+
+    public static function update( $data , $remote_id ) {
+
+        $curl = new Curl();
+        $curl->setBasicAuthentication( self::$user_login, self::$password );
+        $curl->setUserAgent('');
+        $curl->setHeader('X-Requested-With', 'XMLHttpRequest');      
+        $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/update' , array( 'data' => $data , 'remote_id' => $remote_id ));
+        
+
+        if ($curl->error) {
+            return false;
+        } else {
+            return $curl->response;
+        }
+
 
     }
 

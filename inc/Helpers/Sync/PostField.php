@@ -66,7 +66,7 @@ class PostField extends \ToolboxSync\Helpers\Sync {
                     if ( false === apply_filters( 'toolboxsync/post_field/sync', true, $field_key, $post_field_value, $post_id ) ) {
                         continue;
                     }
-                    $prepared_post_fields[ $field_key ][] = $post_field_value;
+                    $prepared_post_fields[ $field_key ] = $post_field_value;
 
         }
         return $prepared_post_fields;

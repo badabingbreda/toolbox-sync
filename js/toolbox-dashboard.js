@@ -47,22 +47,138 @@
 
         } );
 
+        $( '#tsync-actions' ).on( 'click' , function(e) {
+            // bubble
+            if ( e.target.id == 'push_posts' ) {
+                e.preventDefault();
+                // collect data to send
+                const rows = document.querySelectorAll( '#tsync-local-posts tr' );
+                let selected = [];
+                rows.forEach((v) => {
+                    if ( v.querySelector( 'input[type="checkbox"]' ).checked ) {
+
+                        selected.push( { 
+                            local : v.querySelector( 'input[type="checkbox"]' ).value,
+                            remote : v.querySelector('select').value,
+                        } );
+                    }
+                });
+
+                function ajaxRequest (settings) {
+
+                    if (settings.length > 0) {
+
+                        let current = settings.pop();
+                        let selected = document.querySelector( '#tsync-actions tr[data-id="'+current.local+'"]' );
+                        selected.style.backgroundColor = 'orange';
+
+                        $.ajax({
+                            type: 'POST',
+                            url: `/wp-admin/admin-ajax.php?action=tsync_push_item`,
+                            data: current,
+                        }).success(function( response ) {
+                             selected.style.backgroundColor = 'lightgreen';
+                             ajaxRequest(settings);
+                        })
+                        .error(function(response){
+                            selected.style.backgroundColor = 'red';
+                            ajaxRequest(settings);
+                        })
+                        .done(function (result) {
+                        });
+                    }
+                }
+                
+                ajaxRequest( selected.reverse() );
+
+            }
+        } );
+
+
+
         $( '#toolboxsync-getremoteposts' ).on( 'click' , function(e) {
             e.preventDefault();
+
+            const actions = document.querySelector( '#tsync-actions' );
+            const rowtemplate = document.querySelector( 'template[class="tsync-row"]' );
+            const button = document.querySelector( 'template[class="tsync-pushbutton"]' ).content.cloneNode(true);
+
+            actions.innerHTML = '';
+
             jQuery.ajax( {
                 type: 'GET',
                 url: `/wp-admin/admin-ajax.php?action=tsync_push_prepare`,
                 data: { 
                 },
-                success: (data) => {
+                success: (response) => {
                     
-                    console.log( data );
+                    console.log( response );
 
+                    //const local = response.data.local;
+                    //const remote = response.data.remote;
+                    
+
+                    const remotetarget = remotedropdown( response.data.remote );
+                    const table = document.createElement( 'table' );
+                    table.id = 'tsync-local-posts';
+                    
+                    
+                    response.data.suggest.forEach( (item) => {
+                        
+                        let newRow = rowtemplate.content.cloneNode(true);
+
+                        let local = response.data.local.find( (v) => v.local_id == item.local );
+                        let remote = response.data.remote.find( (v) => v.local_id == item.remote );
+                        
+                        newRow.querySelector( 'tr' ).dataset.id = item.local;
+                        newRow.querySelector( '.local-id input' ).value = item.local;
+                        newRow.querySelector( '.local-id input' ).id = `source_${item.local}`;
+                        newRow.querySelector( '.local-id label' ).innerHTML = item.local;
+                        newRow.querySelector( '.local-id label' ).htmlFor = `source_${item.local}`;
+                        
+                        newRow.querySelector( '.local-title' ).innerHTML = `${local.title} (${local.slug})`;
+
+                        // clone select
+                        let newselect = remotetarget.cloneNode(true);
+                        newselect.attributes.name = `target_${item.local}`;
+                        if ( item.type === 'existing' || item.type === 'match' ) {
+                            newselect.value = remote.local_id;
+                        } else {
+                            newselect.value = 'new';
+                        }
+                        
+                        
+                        newRow.querySelector( '.remote-id' ).appendChild( newselect );
+                        
+                        table.appendChild( newRow );
+                    } );
+                    
+                    actions.appendChild( table );
+                    actions.appendChild( button );
                     
                 }
             });
 
         } );
+
+
+
+        function remotedropdown( remote ) {
+            let drop = document.createElement( 'select' );
+            let option = document.createElement( 'option' );
+            option.value = 'new';
+            option.innerText = `Create new post`;
+            drop.appendChild(option);
+
+            remote.forEach( (v) => {
+                let option = document.createElement( 'option' );
+                option.value = v.local_id;
+                option.innerText = `${v.local_id} - ${v.title} (${v.slug})`;
+                drop.appendChild(option);
+            });
+
+            return drop;
+        }
 
     });
 

@@ -47,7 +47,11 @@ class Meta extends \ToolboxSync\Helpers\Sync {
                     if ( false === apply_filters( 'toolboxsync/post_meta/sync', true, $meta_key, $meta_value, $post_id ) ) {
                         continue;
                     }
-                    $prepared_meta[ $meta_key ][] = $meta_value;
+
+                    $meta_value = apply_filters("toolboxsync/post_meta/filter" , $meta_value );
+                    $meta_value = apply_filters("toolboxsync/post_meta/filter/{$meta_key}" , $meta_value );
+
+                    $prepared_meta[ $meta_key ] = $meta_value;
                 }
             }
         }

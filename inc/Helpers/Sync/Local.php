@@ -8,6 +8,8 @@ class Local extends \ToolboxSync\Helpers\Sync {
 
 
 	public function __construct() {
+
+		//add_filter( 'toolboxsync/post_meta/filter' , function( $value ) { return json_encode( $value ); } );
 		
 	}
     
@@ -26,6 +28,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
 			'post_type' => $post_type,
 			'fields' => 'ids',
 			'post_status' => 'any',
+			'numberposts' => -1,
 
 		];
 
@@ -43,8 +46,8 @@ class Local extends \ToolboxSync\Helpers\Sync {
 							'slug' => get_post_field( 'post_name' , $post_id, 'raw' ),
 							'title' => get_post_field( 'post_title' , $post_id, 'raw' ),
 							'modified' => get_post_field( 'post_modified' , $post_id, 'raw' ),
-							'local_ID' => $post_id,
-							'remote_ID' => $remote_id ? $remote_id : false,
+							'local_id' => $post_id,
+							'remote_id' => $remote_id ? intval($remote_id) : false,
 						];
 			}
 		}
@@ -67,7 +70,8 @@ class Local extends \ToolboxSync\Helpers\Sync {
 		$remote_id = get_post_meta( $post_id, 'tsync_remote_id', true );
 
 		return [ 
-			'remote_ID' => $remote_id ? $remote_id : false,
+			'local_id' => $post_id,								// the original local id
+			'remote_id' => $remote_id ? $remote_id : false,
 			'fields' => $post_fields, 
 			'meta' => $post_meta,
 		];

@@ -29,20 +29,25 @@ if (!$remote_site) $remote_site = 'https://';
 													[
 														'id' => 'toolboxsync-getremoteposts',
 														'label' => 'Get Remote Posts'
-													] );
+													] 
+								);
 						?>
 					</td>
 				</tr>
+				<tr>
+					<td colspan="2" id="tsync-actions">
+					</td>
+				</tr>
 			</table>
-		<p class="submit">
-						<?php
-								echo Dashboard::input(
-													'submit' ,
-													[
-														'value' => __( 'Update Settings', 'toolbox-sync' ),
-													] );
-						?>
-			<?php wp_nonce_field( $admin_dashboard_name, Dashboard::prefix()."-{$admin_dashboard_name}-nonce" ); ?>
-		</p>
 	</form>
 </div>
+<template class="tsync-row">
+	<tr>
+		<td class="local-id"><input type="checkbox" name="push[]" value="" id="push_{id}"><label for="push_{id}"></label></td>
+		<td class="local-title"></td>
+		<td class="remote-id"></td>
+	</tr>
+</template>
+<template class="tsync-pushbutton">
+	<button id="push_posts">PUSH SELECTED POSTS</button>
+</template>

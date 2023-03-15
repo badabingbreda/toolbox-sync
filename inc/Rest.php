@@ -43,7 +43,7 @@ final class Rest {
 	static public function register_routes() {
 
 		register_rest_route(
-			self::$namespace, '/posts/', array(
+			self::$namespace, '/posts', array(
 				array(
 					'methods'  => \WP_REST_Server::READABLE,
 					'permission_callback' => 'is_user_logged_in', //'__return_true',
@@ -82,6 +82,17 @@ final class Rest {
 		);		
 
 
+		\register_rest_route(
+			self::$namespace, '/update', array(
+				array(
+					'methods'  => \WP_REST_Server::EDITABLE,
+					'permission_callback' => '__return_true',
+					'callback' => __CLASS__ . '::update',
+				),
+			)
+		);		
+
+
 	}
 	
 	/**
@@ -96,22 +107,36 @@ final class Rest {
 
 		$posts = Local::get_all( );
 
-		return rest_ensure_response( [ 'posts' => $posts ] );
+		return rest_ensure_response( $posts );
 
 	}
 
 	static public function post( $request ) {
 
-
-
 		return rest_ensure_response( [ 
 			'id' => $request['id'],
-			
 			'data' => Local::get_single( $request[ 'id' ] ),
 			 ] );
 		
+	}
 
-		//$data = Local::post( );
+	static public function update( $request ) {
+
+		// data
+		$data = $_POST['data'];
+		$remote_id = $_POST['remote_id'];
+		
+		$update_data = $data['fields'];
+		$update_data[ 'ID' ] = $remote_id;
+
+		$data[ 'meta' ][ 'tsync_remote_id' ] = $data[ 'local_id' ];
+
+
+		$update_data[ 'meta_input' ] = $data[ 'meta' ];
+
+		$post_id = \wp_update_post( $update_data );
+
+		return rest_ensure_response( $post_id );
 
 	}
 
