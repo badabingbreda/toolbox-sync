@@ -27,7 +27,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
 		$args = [
 			'post_type' => $post_type,
 			'fields' => 'ids',
-			'post_status' => 'any',
+			'post_status' => ['publish' , 'draft' ],
 			'numberposts' => -1,
 
 		];
@@ -65,14 +65,24 @@ class Local extends \ToolboxSync\Helpers\Sync {
 	 */
 	public static function get_single( $post_id ) {
 
+		// get post fields for post id
 		$post_fields = PostField::prepare_post_fields( $post_id );
+
+		// get postmeta for post id
 		$post_meta = Meta::prepare_meta( $post_id );
+
+		// get taxonomies and terms for post id
+		$post_tax = Tax::prepare_tax( $post_id );
+
+		// get remote id it is connected to if available
 		$remote_id = get_post_meta( $post_id, 'tsync_remote_id', true );
+
 
 		return [ 
 			'local_id' => $post_id,								// the original local id
 			'remote_id' => $remote_id ? $remote_id : false,
 			'fields' => $post_fields, 
+			'tax' => $post_tax,
 			'meta' => $post_meta,
 		];
 		

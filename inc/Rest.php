@@ -147,6 +147,7 @@ final class Rest {
 		$update_data[ 'ID' ] = $data['remote'];
 
 		$update_data[ 'meta_input' ] = $data[ 'meta' ];
+		$update_data[ 'tax_input' ] = $data[ 'tax' ];
 
 		// add the tsync_remote_id key
 		$update_data[ 'tsync_remote_id' ] = $data[ 'local_id' ];
@@ -173,6 +174,7 @@ final class Rest {
 		$update_data = $data['fields'];
 
 		$update_data[ 'meta_input' ] = $data[ 'meta' ];
+		$update_data[ 'tax_input' ] = $data[ 'tax' ];
 
 		// add the tsync_remote_id key
 		$update_data[ 'tsync_remote_id' ] = $data[ 'local_id' ];

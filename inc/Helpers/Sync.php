@@ -6,6 +6,7 @@ use ToolboxSync\Helpers\Sync\Local;
 use ToolboxSync\Helpers\Sync\Remote;
 use ToolboxSync\Helpers\Sync\PostField;
 use ToolboxSync\Helpers\Sync\Meta;
+use ToolboxSync\Helpers\Sync\Tax;
 
 class Sync {
 
@@ -16,6 +17,7 @@ class Sync {
         new Remote();
         new PostField();
         new Meta();
+        new Tax();
 
     }
 

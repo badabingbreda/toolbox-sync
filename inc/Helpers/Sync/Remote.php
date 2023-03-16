@@ -17,6 +17,18 @@ class Remote extends \ToolboxSync\Helpers\Sync {
 
     }
     
+        
+    /**
+     * remote_rest_prefix
+     *
+     * return the filtered remote rest prefix
+     * @return void
+     */
+    private static function remote_rest_prefix() {
+        $remote_rest_prefix = apply_filters( 'toolboxsync/remote_rest_prefix' , 'wp-json' );
+        return $remote_rest_prefix;
+    }
+
     /**
      * test_connection
      *
@@ -28,7 +40,7 @@ class Remote extends \ToolboxSync\Helpers\Sync {
         $curl->setBasicAuthentication( self::$user_login, self::$password );
         $curl->setUserAgent('');
         $curl->setHeader('X-Requested-With', 'XMLHttpRequest');      
-        $curl->get(self::$remotesite . '/wp-json/toolboxsync/v1/connect' );
+        $curl->get(self::$remotesite . "/".self::remote_rest_prefix()."/toolboxsync/v1/connect" );
         
 
         if ($curl->error) {
@@ -37,8 +49,8 @@ class Remote extends \ToolboxSync\Helpers\Sync {
             return true;
         }
 
-
     }
+
     
     /**
      * get
@@ -51,7 +63,7 @@ class Remote extends \ToolboxSync\Helpers\Sync {
         $curl->setBasicAuthentication( self::$user_login, self::$password );
         $curl->setUserAgent('');
         $curl->setHeader('X-Requested-With', 'XMLHttpRequest');      
-        $curl->get(self::$remotesite . '/wp-json/toolboxsync/v1/posts/?posttype=' . $post_type );
+        $curl->get(self::$remotesite . "/".self::remote_rest_prefix()."/toolboxsync/v1/posts/?posttype=" . $post_type );
         
 
         if ($curl->error) {
@@ -75,9 +87,9 @@ class Remote extends \ToolboxSync\Helpers\Sync {
         $data = array_merge( $data , array( 'remote' => $remote_id ) );
 
         if ( $remote_id == 'new' ) {
-            $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/insert' , array( 'data' => $data ) );
+            $curl->post(self::$remotesite . "/".self::remote_rest_prefix()."/toolboxsync/v1/insert" , array( 'data' => $data ) );
         } else {
-            $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/update' , array( 'data' => $data ) );
+            $curl->post(self::$remotesite . "/".self::remote_rest_prefix()."/toolboxsync/v1/update" , array( 'data' => $data ) );
         }
 
         if ($curl->error) {

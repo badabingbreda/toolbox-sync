@@ -4,8 +4,8 @@ namespace ToolboxSync\Helpers\Sync;
 class Tax extends \ToolboxSync\Helpers\Sync {
 
 	private static $ignore_taxonomies = [ 
-	];   
-
+	];
+    
     public function __construct() { }
     
     /**
@@ -20,7 +20,7 @@ class Tax extends \ToolboxSync\Helpers\Sync {
 		$post_type = get_post_field( 'post_type' , $post_id , 'raw' );
 
         // get list of taxonomies here
-        $taxonomies = [];
+        $taxonomies = \get_post_taxonomies( $post_id );
 
         $taxonomies = apply_filters( "toolboxsync/taxonomy/export" , $taxonomies , $post_type , $post_id );
         $taxonomies = apply_filters( "toolboxsync/taxonomy/export/{$post_type}" , $taxonomies, $post_type , $post_id );
@@ -31,7 +31,10 @@ class Tax extends \ToolboxSync\Helpers\Sync {
     
         foreach ( $taxonomies as $taxonomy ) {
 
-                    // get terms for this post id taxonomy
+                    // get terms for this post id taxonomy as objects
+                    $terms_o = get_the_terms( $post_id, $taxonomy );
+
+                    if (!$terms_o) $terms_o = [];
 
                     /**
                      * Filter whether to sync taxonomy.
@@ -48,6 +51,10 @@ class Tax extends \ToolboxSync\Helpers\Sync {
                     if ( false === apply_filters( 'toolboxsync/taxonomy/sync', true, $taxonomy, $post_field_value, $post_id ) ) {
                         continue;
                     }
+
+                    // return the ids only
+                    $terms = array_map( function($v) { return $v->slug; } , $terms_o );
+
                     $prepared_taxonomies[ $taxonomy ] = $terms;
 
         }

@@ -30,12 +30,7 @@ if (!$remote_site) $remote_site = 'https://';
 														'id' => 'toolboxsync-posttype',
 														'label' => 'Select Post Type',
 														'value' => 'fl-theme-layout',
-														'options' => array(
-															[ 'value' => 'fl-theme-layout' , 'label' => 'Themer Layouts' ],
-															[ 'value' => 'fl-builder-template' , 'label' => 'Builder Templates' ],
-															[ 'value' => 'page' , 'label' => 'Pages' ],
-															[ 'value' => 'recipe' , 'label' => 'Recipes' ],
-														)
+														'options' => apply_filters( 'toolboxsync/push_post_types' , [] )
 													] 
 								);
 						?>

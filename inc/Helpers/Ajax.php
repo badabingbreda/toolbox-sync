@@ -54,6 +54,7 @@ class Ajax {
         }
         if ($success ) \update_post_meta( $local_id, 'tsync_remote_id', (integer)$success );
         wp_send_json_success( $success , 200 );
+        
     }
 
 
