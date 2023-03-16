@@ -102,13 +102,14 @@
             const actions = document.querySelector( '#tsync-actions' );
             const rowtemplate = document.querySelector( 'template[class="tsync-row"]' );
             const button = document.querySelector( 'template[class="tsync-pushbutton"]' ).content.cloneNode(true);
-
+            const posttype = document.querySelector( '#toolboxsync-posttype' ).value;
             actions.innerHTML = '';
 
             jQuery.ajax( {
                 type: 'GET',
                 url: `/wp-admin/admin-ajax.php?action=tsync_push_prepare`,
-                data: { 
+                data: {
+                    posttype : posttype, 
                 },
                 error: ( response ) => {
                     console.log( response );
@@ -137,11 +138,9 @@
                         newRow.querySelector( 'tr' ).dataset.id = item.local;
                         newRow.querySelector( '.local-id input' ).value = item.local;
                         newRow.querySelector( '.local-id input' ).id = `source_${item.local}`;
-                        newRow.querySelector( '.local-id label' ).innerHTML = item.local;
+                        newRow.querySelector( '.local-id label' ).innerHTML = `${item.local} - ${local.title} (${local.slug})`;
                         newRow.querySelector( '.local-id label' ).htmlFor = `source_${item.local}`;
                         
-                        newRow.querySelector( '.local-title' ).innerHTML = `${local.title} (${local.slug})`;
-
                         // clone select
                         let newselect = remotetarget.cloneNode(true);
                         newselect.attributes.name = `target_${item.local}`;

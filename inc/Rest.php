@@ -45,12 +45,17 @@ final class Rest {
 	public static function register_routes() {
 
 		register_rest_route(
-			self::$namespace, '/posts', array(
+			self::$namespace, '/posts(?:\/(?P<postype>))?', array(
 				array(
 					'methods'  => \WP_REST_Server::READABLE,
 					'permission_callback' => 'is_user_logged_in', //'__return_true',
 					'callback' => __CLASS__ . '::posts',
-					'args' => array(),
+					'args' => [ 
+						'posttype' => [ 
+							'type' => 'string',
+							'required' => true,
+						],
+					]
 				),
 			)
 		);
@@ -117,7 +122,7 @@ final class Rest {
 	 */
 	public static function posts( $request ) {
 
-		$posts = Local::get_all( );
+		$posts = Local::get_all( $request[ 'posttype' ] );
 
 		return rest_ensure_response( $posts );
 

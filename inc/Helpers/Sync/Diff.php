@@ -32,30 +32,57 @@ class Diff extends \ToolboxSync\Helpers\Sync {
                                     'suggest' => "push local {$local_post['remote_id']} to remote {$match['local_id']}",
                                     "type" => "existing",
                                 ];
+                } else {
+                    $suggest[] = self::try_match( $local_post , $remote );
                 }
             // if no connection exists
             } else {
-                $match = self::match($remote, $local_post);
-                // try and match
-                if ( $match ) {
-                    $suggest[] = [
-                        'local' => $local_post[ 'local_id' ],
-                        'remote' => $match[ 'local_id' ],
-                        "suggest" => "push local {$local_post['local_id']} to remote {$match['local_id']}",
-                        "type" => "match",
-                    ];
-                } else {
-                    $suggest[] = [
-                        'local' => $local_post[ 'local_id' ],
-                        'remote' => false,
-                        "suggest" => "create new",
-                        "type" => "new",
-                    ];
-                }
+                $suggest[] = self::try_match( $local_post , $remote );
+                // $match = self::match($remote, $local_post);
+                // // try and match
+                // if ( $match ) {
+                //     $suggest[] = [
+                //         'local' => $local_post[ 'local_id' ],
+                //         'remote' => $match[ 'local_id' ],
+                //         "suggest" => "push local {$local_post['local_id']} to remote {$match['local_id']}",
+                //         "type" => "match",
+                //     ];
+                // } else {
+                //     $suggest[] = [
+                //         'local' => $local_post[ 'local_id' ],
+                //         'remote' => false,
+                //         "suggest" => "create new",
+                //         "type" => "new",
+                //     ];
+                // }
             }
         }
 
         return $suggest;
+    }
+
+    private static function try_match( $local_post , $remote ) {
+
+        $match = self::match($remote, $local_post);
+        // try and match
+        if ( $match ) {
+            $suggest = [
+                'local' => $local_post[ 'local_id' ],
+                'remote' => $match[ 'local_id' ],
+                "suggest" => "push local {$local_post['local_id']} to remote {$match['local_id']}",
+                "type" => "match",
+            ];
+        } else {
+            $suggest = [
+                'local' => $local_post[ 'local_id' ],
+                'remote' => false,
+                "suggest" => "create new",
+                "type" => "new",
+            ];
+        }
+
+        return $suggest;
+
     }
     
     /**

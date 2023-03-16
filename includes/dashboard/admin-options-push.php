@@ -21,6 +21,26 @@ if (!$remote_site) $remote_site = 'https://';
 	<form id="<?php echo Dashboard::prefix();?>-<?php echo $admin_dashboard_name; ?>" action="<?php echo Dashboard::render_form_action( $admin_dashboard_name ); ?>" method="post">
 			<h3><?php _e( 'Push Posts' , 'toolbox-sync' );?></h3>
 			<table class="form-table">
+			<tr valign="top">
+					<td colspan="2">
+						<?php
+								echo Dashboard::input(
+													'dropdown' ,
+													[
+														'id' => 'toolboxsync-posttype',
+														'label' => 'Select Post Type',
+														'value' => 'fl-theme-layout',
+														'options' => array(
+															[ 'value' => 'fl-theme-layout' , 'label' => 'Themer Layouts' ],
+															[ 'value' => 'fl-builder-template' , 'label' => 'Builder Templates' ],
+															[ 'value' => 'page' , 'label' => 'Pages' ],
+															[ 'value' => 'recipe' , 'label' => 'Recipes' ],
+														)
+													] 
+								);
+						?>
+					</td>
+				</tr>
 				<tr valign="top">
 					<td colspan="2">
 						<?php
@@ -28,7 +48,7 @@ if (!$remote_site) $remote_site = 'https://';
 													'button' ,
 													[
 														'id' => 'toolboxsync-getremoteposts',
-														'label' => 'Get Remote Posts'
+														'label' => 'Check Synceable Status'
 													] 
 								);
 						?>
@@ -44,7 +64,6 @@ if (!$remote_site) $remote_site = 'https://';
 <template class="tsync-row">
 	<tr>
 		<td class="local-id"><input type="checkbox" name="push[]" value="" id="push_{id}"><label for="push_{id}"></label></td>
-		<td class="local-title"></td>
 		<td class="remote-id"></td>
 	</tr>
 </template>

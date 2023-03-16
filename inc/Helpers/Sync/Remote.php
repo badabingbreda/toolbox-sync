@@ -45,13 +45,13 @@ class Remote extends \ToolboxSync\Helpers\Sync {
      *
      * @return void
      */
-    public static function get_all() {
+    public static function get_all( $post_type = 'fl-theme-layout' ) {
 
         $curl = new Curl();
         $curl->setBasicAuthentication( self::$user_login, self::$password );
         $curl->setUserAgent('');
         $curl->setHeader('X-Requested-With', 'XMLHttpRequest');      
-        $curl->get(self::$remotesite . '/wp-json/toolboxsync/v1/posts' );
+        $curl->get(self::$remotesite . '/wp-json/toolboxsync/v1/posts/?posttype=' . $post_type );
         
 
         if ($curl->error) {

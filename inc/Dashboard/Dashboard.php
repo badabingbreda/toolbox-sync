@@ -276,7 +276,7 @@ class Dashboard {
 	public static function input( $type , $options = [] ) {
 
 		$type 	= esc_html( $type );
-		$options = array_map( 'esc_attr' , $options );
+		//$options = array_map( 'esc_attr' , $options );
 
 		switch ($type):
 			case "text":
@@ -296,6 +296,30 @@ class Dashboard {
 				);
 
 				return "<input type=\"${type}\" value=\"{$options['value']}\" name=\"{$options['id']}\" id=\"{$options['id']}\" {$options['checked']}>";
+
+			break;
+
+			case "dropdown":
+
+				$options = wp_parse_args( $options ,
+								self::key_defaults( [ 'value' , 'id' , 'options' ] )
+							
+				);
+
+				//ternary
+				$sel_options = 
+					is_array($options[ 'options' ]) 
+					? 
+						implode( '' , array_map( function($v) use ($options) { 
+							$checked = ( $v['value'] == $options[ 'value' ] ) ? " CHECKED" : "";
+							return "<option value=\"{$v['value']}\"{$checked}>{$v['label']}</option>"; 
+						} , $options[ 'options' ] ) )
+					: 
+						"";
+
+
+
+				return "<select value=\"{$options['value']}\" name=\"{$options['id']}\" id=\"{$options['id']}\">{$sel_options}</select>";
 
 			break;
 
@@ -321,7 +345,7 @@ class Dashboard {
 
 		endswitch;
 
-		return void;
+		return '';
 	}
 
 	/**

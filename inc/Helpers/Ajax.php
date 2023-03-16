@@ -19,10 +19,13 @@ class Ajax {
 
         if (!Remote::connect()) wp_send_json_error( 'Could not connect', 403 );
 
+        $post_type = filter_input( INPUT_GET , 'posttype' );
+        if ( !$post_type ) $post_type = false;
+
         // connect to remote and get the posts
-        $remote = Remote::get_all();
+        $remote = Remote::get_all( $post_type );
         // get the local posts
-        $local = Local::get_all();
+        $local = Local::get_all( $post_type );
 
         // compare both lists, but make local leading
         $suggest = Diff::suggest( $local , $remote );
