@@ -110,6 +110,10 @@
                 url: `/wp-admin/admin-ajax.php?action=tsync_push_prepare`,
                 data: { 
                 },
+                error: ( response ) => {
+                    console.log( response );
+                    alert( 'Couldn\'t connect to remote site or an error occured.' );
+                },
                 success: (response) => {
                     
                     console.log( response );

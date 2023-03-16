@@ -31,7 +31,7 @@ final class Rest {
 		
 		add_action( 'rest_api_init' 			, __CLASS__ . '::register_routes' );
 
-		add_action( 'toolboxsync/update/after' 	, __CLASS__ . '::rawmeta_update' , 10 , 2 );
+		add_action( 'toolboxsync/update/after' 	, __CLASS__ . '::beaverbuilder_rawmeta_update' , 10 , 2 );
 
 	}
 
@@ -42,7 +42,7 @@ final class Rest {
 	 * @since  0.1
 	 * @return void
 	 */
-	static public function register_routes() {
+	public static function register_routes() {
 
 		register_rest_route(
 			self::$namespace, '/posts', array(
@@ -94,6 +94,16 @@ final class Rest {
 			)
 		);		
 
+		\register_rest_route(
+			self::$namespace, '/insert', array(
+				array(
+					'methods'  => \WP_REST_Server::EDITABLE,
+					'permission_callback' => '__return_true',
+					'callback' => __CLASS__ . '::insert',
+				),
+			)
+		);		
+
 
 	}
 	
@@ -105,7 +115,7 @@ final class Rest {
 	 * @param object $request
 	 * @return array
 	 */
-	static public function posts( $request ) {
+	public static function posts( $request ) {
 
 		$posts = Local::get_all( );
 
@@ -113,7 +123,7 @@ final class Rest {
 
 	}
 
-	static public function post( $request ) {
+	public static function post( $request ) {
 
 		return rest_ensure_response( [ 
 			'id' => $request['id'],
@@ -122,44 +132,103 @@ final class Rest {
 		
 	}
 
-	static public function update( $request ) {
+	public static function update( $request ) {
 
 		// data
 		$data = $_POST['data'];
-		$remote = $data['remote'];
 		
 		$update_data = $data['fields'];
-		$update_data[ 'ID' ] = $remote;
-
-		$data[ 'meta' ][ 'tsync_remote_id' ] = $data[ 'local_id' ];
+		// set the ID so that we control what post id is going to be updated
+		$update_data[ 'ID' ] = $data['remote'];
 
 		$update_data[ 'meta_input' ] = $data[ 'meta' ];
 
+		// add the tsync_remote_id key
+		$update_data[ 'tsync_remote_id' ] = $data[ 'local_id' ];
+
+		// allow update data to be filtered on the receiving site prior to update
 		$updata_data = apply_filters( 'toolboxsync/update/data' , $update_data );
 
 		$post_id = \wp_update_post( $update_data );
-
-		do_action( 'toolboxsync/update/after' , $post_id , $update_data );
-
 		
+		// do actions after the update
+		// for instance, perform raw update of meta values
+		do_action( 'toolboxsync/update/after' , $post_id , $update_data );
+		
+		// return the post_id
 		return rest_ensure_response( $post_id );
 		
 	}
-	
-	static public function rawmeta_update( $post_id , $update_data ) {
-		
-		global $wpdb;
-	
-		$wpdb->update( $wpdb->prefix . 'postmeta' , 
-		[ 'meta_value' => str_replace( [ '\"' ] , [ '"' ] , $update_data[ 'meta_input' ][ '_fl_builder_data' ]) ] ,
-		[ 'meta_key' => '_fl_builder_data' , 'post_id' => $post_id ]
-		 );
-	
-		 $wpdb->update( $wpdb->prefix . 'postmeta' , 
-		 [ 'meta_value' => str_replace( [ '\"' ] , [ '"' ] , $update_data[ 'meta_input' ][ '_fl_builder_draft' ]) ] ,
-		 [ 'meta_key' => '_fl_builder_draft' , 'post_id' => $post_id ]
-		  );
 
+	public static function insert( $request ) {
+
+		// data
+		$data = $_POST['data'];
+		
+		$update_data = $data['fields'];
+
+		$update_data[ 'meta_input' ] = $data[ 'meta' ];
+
+		// add the tsync_remote_id key
+		$update_data[ 'tsync_remote_id' ] = $data[ 'local_id' ];
+
+		// allow update data to be filtered on the receiving site prior to update
+		$updata_data = apply_filters( 'toolboxsync/update/data' , $update_data );
+
+		$post_id = \wp_insert_post( $update_data );
+		
+		// do actions after the update
+		// for instance, perform raw update of meta values
+		do_action( 'toolboxsync/update/after' , $post_id , $update_data );
+		
+		// return the post_id
+		return rest_ensure_response( $post_id );
+		
+	}
+
+	
+	/**
+	 * raw_meta_update
+	 * 
+	 * helper to update raw meta in the database
+	 *
+	 * @param  mixed $post_id
+	 * @param  mixed $meta_key
+	 * @param  mixed $meta_value
+	 * @return void
+	 */
+	private static function raw_meta_update( $post_id , $meta_key , $meta_value ) {
+
+		global $wpdb;
+		
+		$wpdb->update( 
+			$wpdb->prefix . 'postmeta', 
+			[ 'meta_value' => str_replace( [ '\"' , "\'" ] , [ '"' , "'" ] , $meta_value) ] ,
+			[ 'meta_key' => $meta_key , 'post_id' => $post_id ]
+		 );
+
+		 return null;
+	}
+		
+	/**
+	 * beaverbuilder_rawmeta_update
+	 * 
+	 * Check the meta_input values for _fl_theme_* and _fl_builder_* keys. If found import as raw meta
+	 * Also make sure to clear builder draft because otherwise we will end up with old layout on next edit
+	 *
+	 * @param  mixed $post_id
+	 * @param  mixed $update_data
+	 * @return void
+	 */
+	public static function beaverbuilder_rawmeta_update( $post_id , $update_data ) {
+
+		foreach ($update_data[ 'meta_input' ] as $meta_key => $meta_value ) {
+			if ( strpos( $meta_key , '_fl_theme' ) === false && strpos( $meta_key , '_fl_builder' ) === false ) continue;
+
+			self::raw_meta_update( $post_id , $meta_key , $meta_value );
+		}
+
+		\delete_post_meta( $post_id , '_fl_builder_draft' );
 
 	}
 

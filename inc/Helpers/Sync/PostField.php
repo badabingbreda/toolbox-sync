@@ -22,7 +22,7 @@ class PostField extends \ToolboxSync\Helpers\Sync {
 		'post_parent',
 		//'guid',
 		'menu_order',
-		// 'post_type',
+		'post_type',
 		//'post_mime_type',
 		//'comment_count',
 		//'filter',

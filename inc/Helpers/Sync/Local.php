@@ -40,7 +40,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
 
 			foreach ($posts as $post_id) {
 
-				$remote_id = get_post_meta( $post_id, 'tsync_remote_id', true );
+				$remote_id = (integer)get_post_meta( $post_id, 'tsync_remote_id', true );
 
 				$data[] = [ 
 							'slug' => get_post_field( 'post_name' , $post_id, 'raw' ),

@@ -19,9 +19,12 @@ class Ajax {
 
         if (!Remote::connect()) wp_send_json_error( 'Could not connect', 403 );
 
+        // connect to remote and get the posts
         $remote = Remote::get_all();
+        // get the local posts
         $local = Local::get_all();
 
+        // compare both lists, but make local leading
         $suggest = Diff::suggest( $local , $remote );
 
         // add test if is member at some time
@@ -34,28 +37,22 @@ class Ajax {
     public static function push_item() {
 
         if ( !defined( 'DOING_AJAX' ) )  DEFINE( 'DOING_AJAX' , true );
-
-        //if (!Remote::connect()) wp_send_json_error( 'Could not connect', 403 );
-
         $local_id = filter_input( INPUT_POST , 'local' , FILTER_SANITIZE_NUMBER_INT );
-        
         if ( !$local_id ) wp_send_json_error( false, 403 );
-
         $remote_id = filter_input( INPUT_POST , 'remote' );
-
         // get local info
         $local = Local::get_single( $local_id );
-
-
         //wp_send_json_success( $local, 200 );
         if ( $remote_id == 'new' ) {
-            wp_send_json_error( false, 404 );
+            $success = Remote::update( $local , 'new' );
+            // wp_send_json_error( false, 404 );
         } else {
             $success = Remote::update( $local , $remote_id );
-            //\update_post_meta( $local_id, 'tsync_remote_id', $success );
         }
-
+        if ($success ) \update_post_meta( $local_id, 'tsync_remote_id', (integer)$success );
         wp_send_json_success( $success , 200 );
     }
+
+
 
 }

@@ -73,7 +73,12 @@ class Remote extends \ToolboxSync\Helpers\Sync {
         $curl->setHeader('X-Requested-With', 'XMLHttpRequest'); 
         
         $data = array_merge( $data , array( 'remote' => $remote_id ) );
-        $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/update' , array( 'data' => $data ) );
+
+        if ( $remote_id == 'new' ) {
+            $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/insert' , array( 'data' => $data ) );
+        } else {
+            $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/update' , array( 'data' => $data ) );
+        }
 
         if ($curl->error) {
             return false;
