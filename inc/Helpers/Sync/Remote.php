@@ -65,14 +65,15 @@ class Remote extends \ToolboxSync\Helpers\Sync {
 
     }
 
-    public static function update( $data , $remote_id ) {
+    public static function update( $data , $remote_id = false ) {
 
         $curl = new Curl();
         $curl->setBasicAuthentication( self::$user_login, self::$password );
         $curl->setUserAgent('');
-        $curl->setHeader('X-Requested-With', 'XMLHttpRequest');      
-        $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/update' , array( 'data' => $data , 'remote_id' => $remote_id ));
+        $curl->setHeader('X-Requested-With', 'XMLHttpRequest'); 
         
+        $data = array_merge( $data , array( 'remote' => $remote_id ) );
+        $curl->post(self::$remotesite . '/wp-json/toolboxsync/v1/update' , array( 'data' => $data ) );
 
         if ($curl->error) {
             return false;

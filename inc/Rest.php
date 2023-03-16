@@ -31,6 +31,8 @@ final class Rest {
 		
 		add_action( 'rest_api_init' 			, __CLASS__ . '::register_routes' );
 
+		add_action( 'toolboxsync/update/after' 	, __CLASS__ . '::rawmeta_update' , 10 , 2 );
+
 	}
 
 
@@ -124,19 +126,40 @@ final class Rest {
 
 		// data
 		$data = $_POST['data'];
-		$remote_id = $_POST['remote_id'];
+		$remote = $data['remote'];
 		
 		$update_data = $data['fields'];
-		$update_data[ 'ID' ] = $remote_id;
+		$update_data[ 'ID' ] = $remote;
 
 		$data[ 'meta' ][ 'tsync_remote_id' ] = $data[ 'local_id' ];
 
-
 		$update_data[ 'meta_input' ] = $data[ 'meta' ];
+
+		$updata_data = apply_filters( 'toolboxsync/update/data' , $update_data );
 
 		$post_id = \wp_update_post( $update_data );
 
+		do_action( 'toolboxsync/update/after' , $post_id , $update_data );
+
+		
 		return rest_ensure_response( $post_id );
+		
+	}
+	
+	static public function rawmeta_update( $post_id , $update_data ) {
+		
+		global $wpdb;
+	
+		$wpdb->update( $wpdb->prefix . 'postmeta' , 
+		[ 'meta_value' => str_replace( [ '\"' ] , [ '"' ] , $update_data[ 'meta_input' ][ '_fl_builder_data' ]) ] ,
+		[ 'meta_key' => '_fl_builder_data' , 'post_id' => $post_id ]
+		 );
+	
+		 $wpdb->update( $wpdb->prefix . 'postmeta' , 
+		 [ 'meta_value' => str_replace( [ '\"' ] , [ '"' ] , $update_data[ 'meta_input' ][ '_fl_builder_draft' ]) ] ,
+		 [ 'meta_key' => '_fl_builder_draft' , 'post_id' => $post_id ]
+		  );
+
 
 	}
 

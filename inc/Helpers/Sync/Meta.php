@@ -11,9 +11,21 @@ class Meta extends \ToolboxSync\Helpers\Sync {
 		'_edit_last',
 		'_wp_old_slug',
 		'_wp_old_date',
+        //'_fl_builder_draft',
 	];    
 
-    public function __construct() { }
+    public function __construct() { 
+
+        add_filter( 'toolboxsync/post_meta/filter/_fl_builder_data' , __CLASS__ . '::rawmeta' , 10 , 3 );
+        add_filter( 'toolboxsync/post_meta/filter/_fl_builder_draft' , __CLASS__ . '::rawmeta' , 10 , 3 );
+    }
+
+    public static function rawmeta( $meta_value , $post_id , $meta_key ) {
+        global $wpdb;
+        $meta_value = $wpdb->get_var( $wpdb->prepare("SELECT meta_value from {$wpdb->prefix}postmeta WHERE meta_key = %s AND post_id = %d" , $meta_key , $post_id ) );
+        //$meta_value = \get_metadata_raw( 'post', $post_id, $meta_key, true );
+        return $meta_value;
+    }
     
     /**
      * prepare_meta
@@ -49,7 +61,7 @@ class Meta extends \ToolboxSync\Helpers\Sync {
                     }
 
                     $meta_value = apply_filters("toolboxsync/post_meta/filter" , $meta_value );
-                    $meta_value = apply_filters("toolboxsync/post_meta/filter/{$meta_key}" , $meta_value );
+                    $meta_value = apply_filters("toolboxsync/post_meta/filter/{$meta_key}" , $meta_value , $post_id , $meta_key  );
 
                     $prepared_meta[ $meta_key ] = $meta_value;
                 }

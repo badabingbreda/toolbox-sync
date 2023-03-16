@@ -46,11 +46,13 @@ class Ajax {
         // get local info
         $local = Local::get_single( $local_id );
 
+
+        //wp_send_json_success( $local, 200 );
         if ( $remote_id == 'new' ) {
             wp_send_json_error( false, 404 );
         } else {
             $success = Remote::update( $local , $remote_id );
-            \update_post_meta( $local_id, 'tsync_remote_id', $success );
+            //\update_post_meta( $local_id, 'tsync_remote_id', $success );
         }
 
         wp_send_json_success( $success , 200 );

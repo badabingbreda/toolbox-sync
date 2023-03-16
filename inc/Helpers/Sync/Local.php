@@ -47,7 +47,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
 							'title' => get_post_field( 'post_title' , $post_id, 'raw' ),
 							'modified' => get_post_field( 'post_modified' , $post_id, 'raw' ),
 							'local_id' => $post_id,
-							'remote_id' => $remote_id ? intval($remote_id) : false,
+							'remote_id' => $remote_id ? $remote_id : false,
 						];
 			}
 		}
