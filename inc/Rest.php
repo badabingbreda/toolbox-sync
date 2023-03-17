@@ -25,14 +25,14 @@ final class Rest {
 
 	public function __construct() {
 
-		// new AcfHelper();
-		
-		// new MBHelper();
-		
+	
 		add_action( 'rest_api_init' 			, __CLASS__ . '::register_routes' );
 
+		// update certain metadata as raw
 		add_action( 'toolboxsync/update/after' 	, __CLASS__ . '::beaverbuilder_rawmeta_update' , 10 , 2 );
 
+		// when a twig templates cpt has been updated, trigger a save of the cpt data to a file (needed by Timber)
+		add_action( 'toolboxsync/update/after'	, __CLASS__ . '::save_twig_templates_data' , 10 , 1 );
 	}
 
 
@@ -76,7 +76,7 @@ final class Rest {
 			self::$namespace, '/post(?:\/(?P<id>))?', array(
 				array(
 					'methods'  => \WP_REST_Server::READABLE,
-					'permission_callback' => '__return_true',//'is_user_logged_in', //'__return_true',
+					'permission_callback' => 'is_user_logged_in',//'is_user_logged_in', //'__return_true',
 					'callback' => __CLASS__ . '::post',
 					'args' => [ 
 						'id' => [ 
@@ -93,7 +93,7 @@ final class Rest {
 			self::$namespace, '/update', array(
 				array(
 					'methods'  => \WP_REST_Server::EDITABLE,
-					'permission_callback' => '__return_true',
+					'permission_callback' => 'is_user_logged_in',
 					'callback' => __CLASS__ . '::update',
 				),
 			)
@@ -103,7 +103,7 @@ final class Rest {
 			self::$namespace, '/insert', array(
 				array(
 					'methods'  => \WP_REST_Server::EDITABLE,
-					'permission_callback' => '__return_true',
+					'permission_callback' => 'is_user_logged_in',
 					'callback' => __CLASS__ . '::insert',
 				),
 			)
@@ -237,6 +237,21 @@ final class Rest {
 
 		\delete_post_meta( $post_id , '_fl_builder_draft' );
 
+	}
+
+	public static function save_twig_templates_data( $post_id ) {
+		
+		if (class_exists( 'toolboxTwigTemplates' )) {
+			// toolbox v1
+			\toolboxTwigTemplates::monitor_save_twigs( $post_id );
+		} elseif (class_exists( 'Toolbox\Integration\TwigTemplates' )) {
+			// toolbox v2
+			\Toolbox\Integration\TwigTemplates::monitor_save_twigs( $post_id );
+		} else {
+			// bail
+			return;
+		}
+		
 	}
 
 
