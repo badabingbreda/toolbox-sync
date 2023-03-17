@@ -9,9 +9,10 @@ use ToolboxSync\Helpers\Sync;
 class Init {
 
     private static $default_cpt = array(
-        [ 'value' => 'fl-theme-layout' , 'label' => 'Themer Layouts' ],
-        [ 'value' => 'fl-builder-template' , 'label' => 'Builder Templates' ],
-        [ 'value' => 'page' , 'label' => 'Pages' ],
+        'fl-theme-layout' => 'Themer Layouts',
+        'fl-builder-template' => 'Builder Templates',
+        'twig_templates' => 'Twig Templates',
+        'page' => 'Pages',
     );
 
     public function __construct() {

@@ -310,10 +310,10 @@ class Dashboard {
 				$sel_options = 
 					is_array($options[ 'options' ]) 
 					? 
-						implode( '' , array_map( function($v) use ($options) { 
-							$checked = ( $v['value'] == $options[ 'value' ] ) ? " CHECKED" : "";
-							return "<option value=\"{$v['value']}\"{$checked}>{$v['label']}</option>"; 
-						} , $options[ 'options' ] ) )
+						implode( '' , array_map( function($k,$v) use ($options) { 
+							$checked = ( $v == $options[ 'value' ] ) ? " CHECKED" : "";
+							return "<option value=\"{$k}\"{$checked}>{$v}</option>"; 
+						} , array_keys($options[ 'options' ]), array_values($options['options']) ) )
 					: 
 						"";
 
