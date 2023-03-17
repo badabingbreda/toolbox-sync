@@ -52,7 +52,7 @@
             if ( e.target.id == 'push_posts' ) {
                 e.preventDefault();
                 // collect data to send
-                const rows = document.querySelectorAll( '#tsync-local-posts tr' );
+                const rows = document.querySelectorAll( '#tsync-local-posts tr[data-id]' );
                 let selected = [];
                 rows.forEach((v) => {
                     if ( v.querySelector( 'input[type="checkbox"]' ).checked ) {
@@ -94,12 +94,28 @@
             }
         } );
 
+        $( '#tsync-actions' ).on( 'click' , function(e) {
+            // bubble
+            if ( e.target.id == 'de_select_all' ) {
+                // e.preventDefault();
+                const state = e.target.checked;
+
+                const rows = document.querySelectorAll( '#tsync-local-posts input[name^="push"]' );
+
+                rows.forEach( v => { v.checked = state; } );
+
+
+
+            }
+        } );
+
 
 
         $( '#toolboxsync-getremoteposts' ).on( 'click' , function(e) {
             e.preventDefault();
 
             const actions = document.querySelector( '#tsync-actions' );
+            const de_select_all = document.querySelector( 'template[class="tsync-de_select_all"]' ).content.cloneNode(true);
             const rowtemplate = document.querySelector( 'template[class="tsync-row"]' );
             const button = document.querySelector( 'template[class="tsync-pushbutton"]' ).content.cloneNode(true);
             const posttype = document.querySelector( '#toolboxsync-posttype' ).value;
@@ -126,7 +142,8 @@
                     const remotetarget = remotedropdown( response.data.remote );
                     const table = document.createElement( 'table' );
                     table.id = 'tsync-local-posts';
-                    
+
+                    table.appendChild(de_select_all);                   
                     
                     response.data.suggest.forEach( (item) => {
                         

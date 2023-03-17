@@ -56,6 +56,13 @@ if (!$remote_site) $remote_site = 'https://';
 			</table>
 	</form>
 </div>
+<template class="tsync-de_select_all">
+	<tr>
+		<td colspan="2">
+			<input type="checkbox" name="de_select_all" id="de_select_all"><label for="de_select_all"></label>
+		</td>
+	</tr>
+</template>
 <template class="tsync-row">
 	<tr>
 		<td class="local-id"><input type="checkbox" name="push[]" value="" id="push_{id}"><label for="push_{id}"></label></td>
