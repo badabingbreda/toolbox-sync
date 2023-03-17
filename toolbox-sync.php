@@ -10,7 +10,7 @@
  * Plugin Name: Toolbox Sync
  * Plugin URI:  https://www.badabing.nl
  * Description: Sync between 2 WP sites
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Badabingbreda
  * Author URI:  https://www.badabing.nl
  * Text Domain: toolbox-sync
@@ -33,7 +33,7 @@ if ( defined( 'ABSPATH' ) && ! defined( 'TOOLBOXSYNC_VERION' ) ) {
     }
  }
 
-  define( 'TOOLBOXSYNC_VERSION'   , '1.0.0' );
+  define( 'TOOLBOXSYNC_VERSION'   , '1.0.1' );
   define( 'TOOLBOXSYNC_DIR'     , plugin_dir_path( __FILE__ ) );
   define( 'TOOLBOXSYNC_FILE'    , __FILE__ );
   define( 'TOOLBOXSYNC_URL'     , plugins_url( '/', __FILE__ ) );

@@ -31,9 +31,9 @@
             params = { 
                 ...params , 
                 ...{ 
-                    app_name : 'recipeplucker',
+                    app_name : window.location.origin,
                     app_id : '',
-                    success_url : 'https://recipe-plucker.test/wp-admin/options-general.php?page=toolboxsync-settings',
+                    success_url : window.location.origin + '/wp-admin/options-general.php?page=toolboxsync-settings',
                 }
             };
 
@@ -138,6 +138,7 @@
                         newRow.querySelector( 'tr' ).dataset.id = item.local;
                         newRow.querySelector( '.local-id input' ).value = item.local;
                         newRow.querySelector( '.local-id input' ).id = `source_${item.local}`;
+                        if ( item.modified != 'older' ) newRow.querySelector( '.local-id input' ).checked = true;
                         newRow.querySelector( '.local-id label' ).innerHTML = `${item.local} - ${local.title} (${local.slug})`;
                         newRow.querySelector( '.local-id label' ).htmlFor = `source_${item.local}`;
                         

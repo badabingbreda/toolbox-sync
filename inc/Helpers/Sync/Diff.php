@@ -30,6 +30,7 @@ class Diff extends \ToolboxSync\Helpers\Sync {
                                     'local' => $local_post[ 'local_id' ],
                                     'remote' => $match[ 'local_id' ],
                                     'suggest' => "push local {$local_post['remote_id']} to remote {$match['local_id']}",
+                                    'modified' => $local_post[ 'modified' ] > $match[ 'modified' ] ? "newer" : "older",
                                     "type" => "existing",
                                 ];
                 } else {
@@ -70,6 +71,7 @@ class Diff extends \ToolboxSync\Helpers\Sync {
                 'local' => $local_post[ 'local_id' ],
                 'remote' => $match[ 'local_id' ],
                 "suggest" => "push local {$local_post['local_id']} to remote {$match['local_id']}",
+                'modified' => $local_post[ 'modified' ] > $match[ 'modified' ] ? "newer" : "older",
                 "type" => "match",
             ];
         } else {
@@ -77,6 +79,7 @@ class Diff extends \ToolboxSync\Helpers\Sync {
                 'local' => $local_post[ 'local_id' ],
                 'remote' => false,
                 "suggest" => "create new",
+                "modified" => "create",
                 "type" => "new",
             ];
         }
