@@ -70,5 +70,5 @@ if (!$remote_site) $remote_site = 'https://';
 	</tr>
 </template>
 <template class="tsync-pushbutton">
-	<button id="push_posts">PUSH SELECTED POSTS</button>
+	<button id="push_posts" class="button-primary">PUSH SELECTED POSTS</button>
 </template>

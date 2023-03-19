@@ -6,6 +6,9 @@ use ToolboxSync\Helpers\Ajax;
 use ToolboxSync\Dashboard\Dashboard;
 use ToolboxSync\Helpers\Sync;
 
+use ToolboxSync\Integration\BeaverBuilder;
+use ToolboxSync\Integration\Toolbox;
+
 class Init {
 
     private static $default_cpt = array(
@@ -21,6 +24,9 @@ class Init {
         new Ajax();
         new Dashboard();
         new Sync();
+
+        new BeaverBuilder();
+        new Toolbox();
 
         add_filter( 'toolboxsync/push_post_types' , __CLASS__ . '::add_default_cpts' , 10 , 1 );
 

@@ -45,6 +45,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
 				$data[] = [ 
 							'slug' => get_post_field( 'post_name' , $post_id, 'raw' ),
 							'title' => get_post_field( 'post_title' , $post_id, 'raw' ),
+							'extra' => apply_filters( 'toolboxsync/get/extra' , "" , $post_id ),
 							'modified' => get_post_field( 'post_modified' , $post_id, 'raw' ),
 							'local_id' => $post_id,
 							'remote_id' => $remote_id ? $remote_id : false,
@@ -84,6 +85,7 @@ class Local extends \ToolboxSync\Helpers\Sync {
 			'fields' => $post_fields, 
 			'tax' => $post_tax,
 			'meta' => $post_meta,
+			'requesting_siteurl' => \get_option( 'siteurl' ),
 		];
 		
 	}

@@ -136,4 +136,31 @@ class Meta extends \ToolboxSync\Helpers\Sync {
         return $exclude_meta_keys;
     }
 
+	/**
+	 * raw_meta_update
+	 * 
+	 * helper to update raw meta in the database
+	 *
+	 * @param  mixed $post_id
+	 * @param  mixed $meta_key
+	 * @param  mixed $meta_value
+	 * @return void
+	 */
+	public static function raw_meta_update( $post_id , $meta_key , $meta_value ) {
+
+		global $wpdb;
+		
+		$wpdb->update( 
+			$wpdb->prefix . 'postmeta', 
+			[ 'meta_value' => str_replace( 
+				[ '\"' , "\'"  , '\\\\' ] , 
+				[ '"' , "'" , '\\' ] , 
+				$meta_value
+				) ] ,
+			[ 'meta_key' => $meta_key , 'post_id' => $post_id ]
+		 );
+
+		 return null;
+	}    
+
 }

@@ -28,13 +28,9 @@ final class Rest {
 	
 		add_action( 'rest_api_init' 			, __CLASS__ . '::register_routes' );
 
-		// update certain metadata as raw
-		add_action( 'toolboxsync/update/after' 	, __CLASS__ . '::beaverbuilder_rawmeta_update' , 10 , 2 );
+		//add_filter( 'toolboxsync/update/data' , __CLASS__ . '::update_to_local_url' , 10, 2 );
 
-		// when a twig templates cpt has been updated, trigger a save of the cpt data to a file (needed by Timber)
-		add_action( 'toolboxsync/update/after'	, __CLASS__ . '::save_twig_templates_data' , 10 , 1 );
 	}
-
 
 	/**
 	 * Register routes.
@@ -109,7 +105,6 @@ final class Rest {
 			)
 		);		
 
-
 	}
 	
 	/**
@@ -136,36 +131,48 @@ final class Rest {
 			 ] );
 		
 	}
-
+	
+	/**
+	 * update
+	 *
+	 * @param  mixed $request
+	 * @return void
+	 */
 	public static function update( $request ) {
 
 		// data
 		$data = $_POST['data'];
-		
+
 		$update_data = $data['fields'];
 		// set the ID so that we control what post id is going to be updated
 		$update_data[ 'ID' ] = $data['remote'];
 
-		$update_data[ 'meta_input' ] = $data[ 'meta' ];
-		$update_data[ 'tax_input' ] = $data[ 'tax' ];
+		if ( isset( $data[ 'meta' ] ) ) $update_data[ 'meta_input' ] = $data[ 'meta' ];
+		if ( isset( $data[ 'tax' ] ) ) $update_data[ 'tax_input' ] = $data[ 'tax' ];
 
 		// add the tsync_remote_id key
 		$update_data[ 'tsync_remote_id' ] = $data[ 'local_id' ];
 
 		// allow update data to be filtered on the receiving site prior to update
-		$updata_data = apply_filters( 'toolboxsync/update/data' , $update_data );
+		$update_data = apply_filters( 'toolboxsync/update/data' , $update_data , $data );
 
 		$post_id = \wp_update_post( $update_data );
 		
 		// do actions after the update
 		// for instance, perform raw update of meta values
-		do_action( 'toolboxsync/update/after' , $post_id , $update_data );
+		do_action( 'toolboxsync/update/after' , $post_id , $update_data , $data );
 		
 		// return the post_id
 		return rest_ensure_response( $post_id );
 		
 	}
-
+	
+	/**
+	 * insert
+	 *
+	 * @param  mixed $request
+	 * @return void
+	 */
 	public static function insert( $request ) {
 
 		// data
@@ -173,85 +180,46 @@ final class Rest {
 		
 		$update_data = $data['fields'];
 
-		$update_data[ 'meta_input' ] = $data[ 'meta' ];
-		$update_data[ 'tax_input' ] = $data[ 'tax' ];
+		if ( isset( $data[ 'meta' ] ) ) $update_data[ 'meta_input' ] = $data[ 'meta' ];
+		if ( isset( $data[ 'tax' ] ) ) $update_data[ 'tax_input' ] = $data[ 'tax' ];
 
 		// add the tsync_remote_id key
 		$update_data[ 'tsync_remote_id' ] = $data[ 'local_id' ];
 
 		// allow update data to be filtered on the receiving site prior to update
-		$updata_data = apply_filters( 'toolboxsync/update/data' , $update_data );
+		$updata_data = apply_filters( 'toolboxsync/update/data' , $update_data , $data );
 
 		$post_id = \wp_insert_post( $update_data );
 		
 		// do actions after the update
 		// for instance, perform raw update of meta values
-		do_action( 'toolboxsync/update/after' , $post_id , $update_data );
+		do_action( 'toolboxsync/update/after' , $post_id , $update_data , $data );
 		
 		// return the post_id
 		return rest_ensure_response( $post_id );
 		
 	}
-
 	
 	/**
-	 * raw_meta_update
-	 * 
-	 * helper to update raw meta in the database
+	 * update_to_local_url
 	 *
-	 * @param  mixed $post_id
-	 * @param  mixed $meta_key
-	 * @param  mixed $meta_value
-	 * @return void
-	 */
-	private static function raw_meta_update( $post_id , $meta_key , $meta_value ) {
-
-		global $wpdb;
-		
-		$wpdb->update( 
-			$wpdb->prefix . 'postmeta', 
-			[ 'meta_value' => str_replace( [ '\"' , "\'" ] , [ '"' , "'" ] , $meta_value) ] ,
-			[ 'meta_key' => $meta_key , 'post_id' => $post_id ]
-		 );
-
-		 return null;
-	}
-		
-	/**
-	 * beaverbuilder_rawmeta_update
-	 * 
-	 * Check the meta_input values for _fl_theme_* and _fl_builder_* keys. If found import as raw meta
-	 * Also make sure to clear builder draft because otherwise we will end up with old layout on next edit
-	 *
-	 * @param  mixed $post_id
 	 * @param  mixed $update_data
+	 * @param  mixed $data
 	 * @return void
 	 */
-	public static function beaverbuilder_rawmeta_update( $post_id , $update_data ) {
+	public static function update_to_local_url( $update_data , $data ) {
 
-		foreach ($update_data[ 'meta_input' ] as $meta_key => $meta_value ) {
-			if ( strpos( $meta_key , '_fl_theme' ) === false && strpos( $meta_key , '_fl_builder' ) === false ) continue;
+		foreach( $update_data[ 'meta_input' ] as $key => $value ) {
+			if ( !is_array( $value )) {
 
-			self::raw_meta_update( $post_id , $meta_key , $meta_value );
+				$update_data[ 'meta_input' ][$key] = str_replace( 
+					[ stripslashes($data[ 'requesting_siteurl' ]) ] , 
+					[ get_option( 'siteurl' , true ) ] , 
+					$update_data[ 'meta_input' ][$key] );
+			}
 		}
 
-		\delete_post_meta( $post_id , '_fl_builder_draft' );
-
-	}
-
-	public static function save_twig_templates_data( $post_id ) {
-		
-		if (class_exists( 'toolboxTwigTemplates' )) {
-			// toolbox v1
-			\toolboxTwigTemplates::monitor_save_twigs( $post_id );
-		} elseif (class_exists( 'Toolbox\Integration\TwigTemplates' )) {
-			// toolbox v2
-			\Toolbox\Integration\TwigTemplates::monitor_save_twigs( $post_id );
-		} else {
-			// bail
-			return;
-		}
-		
+		return $update_data;
 	}
 
 

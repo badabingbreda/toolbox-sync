@@ -329,7 +329,7 @@ class Dashboard {
 											self::key_defaults( [ 'value' , 'id' , 'label' ] )
 				);
 
-				return "<button name=\"{$options['id']}\" id=\"{$options['id']}\">{$options['label']}</button>";
+				return "<button name=\"{$options['id']}\" id=\"{$options['id']}\" class=\"button-primary\">{$options['label']}</button>";
 				
 			break;
 

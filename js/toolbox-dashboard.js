@@ -156,7 +156,7 @@
                         newRow.querySelector( '.local-id input' ).value = item.local;
                         newRow.querySelector( '.local-id input' ).id = `source_${item.local}`;
                         if ( item.modified != 'older' ) newRow.querySelector( '.local-id input' ).checked = true;
-                        newRow.querySelector( '.local-id label' ).innerHTML = `${item.local} - ${local.title} (${local.slug})`;
+                        newRow.querySelector( '.local-id label' ).innerHTML = `${item.local} - ${local.title} (${local.slug}) ${local.extra}`;
                         newRow.querySelector( '.local-id label' ).htmlFor = `source_${item.local}`;
                         
                         // clone select
@@ -194,7 +194,7 @@
             remote.forEach( (v) => {
                 let option = document.createElement( 'option' );
                 option.value = v.local_id;
-                option.innerText = `${v.local_id} - ${v.title} (${v.slug})`;
+                option.innerText = `${v.local_id} - ${v.title} (${v.slug}) ${v.extra}`;
                 drop.appendChild(option);
             });
 
