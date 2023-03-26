@@ -110,15 +110,18 @@
         } );
 
 
-
-        $( '#toolboxsync-getremoteposts' ).on( 'click' , function(e) {
+        /**
+         * Click on get synceable status for PUSH action
+         * 
+         */
+        $( '#toolboxsync-getremoteposts-push' ).on( 'click' , function(e) {
             e.preventDefault();
 
-            const actions = document.querySelector( '#tsync-actions' );
-            const de_select_all = document.querySelector( 'template[class="tsync-de_select_all"]' ).content.cloneNode(true);
-            const rowtemplate = document.querySelector( 'template[class="tsync-row"]' );
-            const button = document.querySelector( 'template[class="tsync-pushbutton"]' ).content.cloneNode(true);
-            const posttype = document.querySelector( '#toolboxsync-posttype' ).value;
+            const actions = document.querySelector( '#tsync-actions-push' );
+            const de_select_all = document.querySelector( 'template[class="tsync-de_select_all-push"]' ).content.cloneNode(true);
+            const rowtemplate = document.querySelector( 'template[class="tsync-row-push"]' );
+            const button = document.querySelector( 'template[class="tsync-button-push"]' ).content.cloneNode(true);
+            const posttype = document.querySelector( '#toolboxsync-posttype-push' ).value;
             actions.innerHTML = '';
 
             jQuery.ajax( {

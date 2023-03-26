@@ -7,6 +7,7 @@ class Meta extends \ToolboxSync\Helpers\Sync {
 		'tsync_remote_id',
 		'tsync_original_post_url',
 		'tsync_original_blog_id',
+        //'_thumbnail_id',
 		'_edit_lock',
 		'_edit_last',
 		'_wp_old_slug',

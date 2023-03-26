@@ -150,6 +150,7 @@ class Dashboard {
 
 		printf( $tabtemplate, 'default', esc_attr__( 'Main' , 'toolbox') );
 		printf( $tabtemplate, 'push', esc_attr__( 'Push' , 'toolbox') );
+		printf( $tabtemplate, 'pull', esc_attr__( 'Pull' , 'toolbox') );
 
 		echo '</div>';
 	}
@@ -163,6 +164,8 @@ class Dashboard {
 
 		self::render_form( 'default' );
 		self::render_form( 'push' );
+		self::render_form( 'pull' );
+
 		// self::render_form( 'timber-templates' );
 	}
 

@@ -18,45 +18,60 @@ class Diff extends \ToolboxSync\Helpers\Sync {
     public static function suggest( $local , $remote , $direction = 'push' ) {
 
         $suggest = [];
-        // get 
-        foreach ($local as $local_post) {
-            
-            // if there supposedly a connection already exists
-            if( $local_post['remote_id'] ) {
-                // check if this still exists
-                $match = self::filter( $remote , $local_post[ 'remote_id' ]);
-                if ($match) {
-                    $suggest[] = [
-                                    'local' => $local_post[ 'local_id' ],
-                                    'remote' => $match[ 'local_id' ],
-                                    'suggest' => "push local {$local_post['remote_id']} to remote {$match['local_id']}",
-                                    'modified' => $local_post[ 'modified' ] > $match[ 'modified' ] ? "newer" : "older",
-                                    "type" => "existing",
-                                ];
+
+        if ( $direction === 'push' ) {
+
+            // get 
+            foreach ($local as $local_post) {
+                
+                // if there supposedly a connection already exists
+                if( $local_post['remote_id'] ) {
+                    // check if this still exists
+                    $match = self::filter( $remote , $local_post[ 'remote_id' ]);
+                    if ($match) {
+                        $suggest[] = [
+                                        'local' => $local_post[ 'local_id' ],
+                                        'remote' => $match[ 'local_id' ],
+                                        'suggest' => "push local {$local_post['remote_id']} to remote {$match['local_id']}",
+                                        'modified' => $local_post[ 'modified' ] > $match[ 'modified' ] ? "newer" : "older",
+                                        "type" => "existing",
+                                    ];
+                    } else {
+                        $suggest[] = self::try_match( $local_post , $remote );
+                    }
+                // if no connection exists
                 } else {
                     $suggest[] = self::try_match( $local_post , $remote );
                 }
-            // if no connection exists
-            } else {
-                $suggest[] = self::try_match( $local_post , $remote );
-                // $match = self::match($remote, $local_post);
-                // // try and match
-                // if ( $match ) {
-                //     $suggest[] = [
-                //         'local' => $local_post[ 'local_id' ],
-                //         'remote' => $match[ 'local_id' ],
-                //         "suggest" => "push local {$local_post['local_id']} to remote {$match['local_id']}",
-                //         "type" => "match",
-                //     ];
-                // } else {
-                //     $suggest[] = [
-                //         'local' => $local_post[ 'local_id' ],
-                //         'remote' => false,
-                //         "suggest" => "create new",
-                //         "type" => "new",
-                //     ];
-                // }
             }
+
+        } elseif ( $direction === 'pull' ) {
+
+            // get 
+            foreach ($remote as $remote_post) {
+                
+                // if there supposedly a connection already exists
+                if( $remote_post['remote_id'] ) {
+                    // check if this still exists
+                    $match = self::filter( $local , $remote_post[ 'remote_id' ]);
+                    if ($match) {
+                        $suggest[] = [
+                                        'local' => $remote_post[ 'local_id' ],
+                                        'remote' => $match[ 'local_id' ],
+                                        'suggest' => "push local {$remote_post['remote_id']} to remote {$match['local_id']}",
+                                        'modified' => $remote_post[ 'modified' ] > $match[ 'modified' ] ? "newer" : "older",
+                                        "type" => "existing",
+                                    ];
+                    } else {
+                        $suggest[] = self::try_match( $remote_post , $local );
+                    }
+                // if no connection exists
+                } else {
+                    $suggest[] = self::try_match( $remote_post , $local );
+                }
+            }
+
+
         }
 
         return $suggest;
