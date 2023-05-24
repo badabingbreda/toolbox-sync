@@ -19,7 +19,7 @@ if (!$remote_site) $remote_site = 'https://';
 ?>
 <div class="jq-tab-content" data-tab="<?php echo $admin_dashboard_name; ?>">
 	<form id="<?php echo Dashboard::prefix();?>-<?php echo $admin_dashboard_name; ?>" action="<?php echo Dashboard::render_form_action( $admin_dashboard_name ); ?>" method="post">
-			<h3><?php _e( 'Push Posts' , 'toolbox-sync' );?></h3>
+			<h3><?php _e( 'Push Posts to Remote' , 'toolbox-sync' );?></h3>
 			<table class="form-table">
 			<tr valign="top">
 					<td colspan="2">
@@ -42,7 +42,7 @@ if (!$remote_site) $remote_site = 'https://';
 								echo Dashboard::input(
 													'button' ,
 													[
-														'id' => 'toolboxsync-getremoteposts-push',
+														'id' => 'toolboxsync-getremote-push',
 														'label' => 'Check Synceable Status'
 													] 
 								);
@@ -59,7 +59,7 @@ if (!$remote_site) $remote_site = 'https://';
 <template class="tsync-de_select_all-push">
 	<tr>
 		<td colspan="2">
-			<input type="checkbox" name="de_select_all" id="de_select_all"><label for="de_select_all"></label>
+			<input type="checkbox" name="de_select_all" id="de_select_all-push"><label for="de_select_all-push"></label>
 		</td>
 	</tr>
 </template>

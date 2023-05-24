@@ -7,6 +7,7 @@ use ToolboxSync\Dashboard\Dashboard;
 use ToolboxSync\Helpers\Sync;
 
 use ToolboxSync\Integration\BeaverBuilder;
+use ToolboxSync\Integration\Bricks;
 use ToolboxSync\Integration\Toolbox;
 
 class Init {
@@ -16,6 +17,7 @@ class Init {
         'fl-builder-template' => 'Builder Templates',
         'twig_templates' => 'Twig Templates',
         'page' => 'Pages',
+        'bricks_template' => 'Bricks Template',
     );
 
     public function __construct() {
@@ -26,6 +28,7 @@ class Init {
         new Sync();
 
         new BeaverBuilder();
+        new Bricks();
         new Toolbox();
 
         add_filter( 'toolboxsync/push_post_types' , __CLASS__ . '::add_default_cpts' , 10 , 1 );

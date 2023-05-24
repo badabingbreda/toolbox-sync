@@ -19,7 +19,7 @@ class Diff extends \ToolboxSync\Helpers\Sync {
 
         $suggest = [];
 
-        if ( $direction === 'push' ) {
+        if ( $direction == 'push' ) {
 
             // get 
             foreach ($local as $local_post) {
@@ -37,15 +37,15 @@ class Diff extends \ToolboxSync\Helpers\Sync {
                                         "type" => "existing",
                                     ];
                     } else {
-                        $suggest[] = self::try_match( $local_post , $remote );
+                        $suggest[] = self::try_match( $local_post , $remote , $direction );
                     }
                 // if no connection exists
                 } else {
-                    $suggest[] = self::try_match( $local_post , $remote );
+                    $suggest[] = self::try_match( $local_post , $remote , $direction );
                 }
             }
 
-        } elseif ( $direction === 'pull' ) {
+        } elseif ( $direction == 'pull' ) {
 
             // get 
             foreach ($remote as $remote_post) {
@@ -58,16 +58,16 @@ class Diff extends \ToolboxSync\Helpers\Sync {
                         $suggest[] = [
                                         'local' => $remote_post[ 'local_id' ],
                                         'remote' => $match[ 'local_id' ],
-                                        'suggest' => "push local {$remote_post['remote_id']} to remote {$match['local_id']}",
+                                        'suggest' => "pull remote {$remote_post['remote_id']} to local {$match['local_id']}",
                                         'modified' => $remote_post[ 'modified' ] > $match[ 'modified' ] ? "newer" : "older",
                                         "type" => "existing",
                                     ];
                     } else {
-                        $suggest[] = self::try_match( $remote_post , $local );
+                        $suggest[] = self::try_match( $remote_post , $local , $direction );
                     }
                 // if no connection exists
                 } else {
-                    $suggest[] = self::try_match( $remote_post , $local );
+                    $suggest[] = self::try_match( $remote_post , $local , $direction );
                 }
             }
 
@@ -77,7 +77,7 @@ class Diff extends \ToolboxSync\Helpers\Sync {
         return $suggest;
     }
 
-    private static function try_match( $local_post , $remote ) {
+    private static function try_match( $local_post , $remote , $direction ) {
 
         $match = self::match($remote, $local_post);
         // try and match

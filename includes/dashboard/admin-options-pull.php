@@ -19,7 +19,7 @@ if (!$remote_site) $remote_site = 'https://';
 ?>
 <div class="jq-tab-content" data-tab="<?php echo $admin_dashboard_name; ?>">
 	<form id="<?php echo Dashboard::prefix();?>-<?php echo $admin_dashboard_name; ?>" action="<?php echo Dashboard::render_form_action( $admin_dashboard_name ); ?>" method="post">
-			<h3><?php _e( 'Pull Posts' , 'toolbox-sync' );?></h3>
+			<h3><?php _e( 'Pull Posts from Remote' , 'toolbox-sync' );?></h3>
 			<table class="form-table">
 			<tr valign="top">
 					<td colspan="2">
@@ -50,7 +50,7 @@ if (!$remote_site) $remote_site = 'https://';
 					</td>
 				</tr>
 				<tr>
-					<td colspan="2" id="tsync-actions">
+					<td colspan="2" id="tsync-actions-pull">
 					</td>
 				</tr>
 			</table>
@@ -59,7 +59,7 @@ if (!$remote_site) $remote_site = 'https://';
 <template class="tsync-de_select_all-pull">
 	<tr>
 		<td colspan="2">
-			<input type="checkbox" name="de_select_all_pull" id="de_select_all_pull"><label for="de_select_all_pull"></label>
+			<input type="checkbox" name="de_select_all-pull" id="de_select_all-pull"><label for="de_select_all-pull"></label>
 		</td>
 	</tr>
 </template>
